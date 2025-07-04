@@ -65,6 +65,9 @@ fun JournalListScreen(
                     snackBarHostState.showSnackbar(event.message)
                     Log.d("JournalListScreen", "ShowSnackBar: ${event.message}")
                 }
+                is JournalViewModel.UiEvent.NavigateToDetail -> {
+                    navController.navigate("detail/${event.entryId}")
+                }
             }
         }
     }
@@ -144,7 +147,7 @@ fun JournalListScreen(
                 }
             } else {
                 LaunchedEffect(noteId) {
-                    navController.navigate("detail/$noteId")
+                    viewModel.navigateToDetail(noteId)
                     selectedNoteId = null
                 }
             }

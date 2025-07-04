@@ -20,6 +20,7 @@ class JournalViewModel : ViewModel() {
     sealed class UiEvent {
         data class ShowToast(val message: String) : UiEvent()
         data class ShowSnackBar(val message: String) : UiEvent()
+        data class NavigateToDetail(val entryId: String) : UiEvent()
     }
 
     fun showToast(message: String) {
@@ -31,6 +32,12 @@ class JournalViewModel : ViewModel() {
     fun showSnackBar(message: String) {
         viewModelScope.launch {
             _eventChannel.send(UiEvent.ShowSnackBar(message))
+        }
+    }
+
+    fun navigateToDetail(entryId: String) {
+        viewModelScope.launch {
+            _eventChannel.send(UiEvent.NavigateToDetail(entryId))
         }
     }
 
