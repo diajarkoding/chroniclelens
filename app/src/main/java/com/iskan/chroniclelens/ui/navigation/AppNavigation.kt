@@ -1,4 +1,4 @@
-package com.iskan.chroniclelens.navigation
+package com.iskan.chroniclelens.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.iskan.chroniclelens.ui.screens.JournalDetailScreen
 import com.iskan.chroniclelens.ui.screens.JournalListScreen
-import com.iskan.chroniclelens.viewmodel.JournalViewModel
+import com.iskan.chroniclelens.ui.viewmodel.JournalViewModel
 
 @Composable
 fun AppNavigation() {
@@ -22,9 +22,12 @@ fun AppNavigation() {
                 viewModel = journalViewModel
             )
         }
-        composable("detail/{entryId}") {
-            val entryId = it.arguments?.getString("entryId")
-            JournalDetailScreen(entryId = entryId ?: "Unknown")
+        composable("detail/{entryId}") { backStackEntry ->
+            val entryId = backStackEntry.arguments?.getString("entryId") ?: "Unknown"
+            JournalDetailScreen(
+                entryId = entryId,
+                viewModel = journalViewModel
+            )
         }
     }
 }

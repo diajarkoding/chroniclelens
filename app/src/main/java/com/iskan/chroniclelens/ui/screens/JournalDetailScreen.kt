@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.iskan.chroniclelens.viewmodel.JournalViewModel
+import com.iskan.chroniclelens.ui.viewmodel.JournalViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
@@ -19,9 +19,7 @@ fun JournalDetailScreen(
     entryId: String,
     viewModel: JournalViewModel = viewModel()
 ) {
-    val entry = remember(entryId) {
-        viewModel.getEntryById(entryId)
-    }
+    val entry = viewModel.getEntryById(entryId)
 
     Column(
         modifier = Modifier
@@ -32,6 +30,6 @@ fun JournalDetailScreen(
         Spacer(modifier = Modifier.height(8.dp))
         Text("ID: $entryId", style = MaterialTheme.typography.bodyLarge)
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Isi: $entry")
+        Text("Title: ${entry?.title}")
     }
 }
