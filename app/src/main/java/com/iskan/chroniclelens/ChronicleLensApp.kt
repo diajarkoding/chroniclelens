@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.iskan.chroniclelens.ui.navigation.AppNavigation
 
+
 @Composable
 fun ChronicleLensApp() {
     MaterialTheme {
