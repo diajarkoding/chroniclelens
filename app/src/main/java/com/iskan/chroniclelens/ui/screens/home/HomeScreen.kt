@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.*
@@ -34,7 +35,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     isDarkTheme: Boolean,
-    onThemeToggle: () -> Unit
+    onThemeToggle: () -> Unit,
+    onNavigateToJournals: () -> Unit = {}
 ) {
     // States
     var journalCount by remember { mutableStateOf(0) }
@@ -132,6 +134,9 @@ fun HomeScreen(
                         journalCount++
                         currentMotivation = motivationalMessages.random()
                         showMotivation = true
+
+                        // Navigate to create journal
+                        onNavigateToJournals()
 
                         // Hide motivation after 3 seconds
                         delay(3000)
@@ -276,6 +281,22 @@ fun HomeScreen(
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // Button to view journals
+                                FilledTonalButton(
+                                    onClick = onNavigateToJournals,
+                                    modifier = Modifier.fillMaxWidth(0.8f)
+                                ) {
+                                    Icon(
+                                        Icons.Default.AutoAwesome,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("View All Memories")
+                                }
                             }
                         }
                     }

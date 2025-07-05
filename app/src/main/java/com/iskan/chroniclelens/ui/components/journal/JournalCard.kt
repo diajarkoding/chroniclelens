@@ -34,7 +34,6 @@ data class JournalEntry(
     val hasLocation: Boolean = false
 )
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun JournalCard(
@@ -44,7 +43,11 @@ fun JournalCard(
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+    val dateFormatter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        DateTimeFormatter.ofPattern("MMM dd, yyyy")
+    } else {
+        TODO("VERSION.SDK_INT < O")
+    }
     val timeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
 
     Card(

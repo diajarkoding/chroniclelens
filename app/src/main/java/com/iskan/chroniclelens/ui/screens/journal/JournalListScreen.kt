@@ -1,7 +1,5 @@
 package com.iskan.chroniclelens.ui.screens.journal
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -18,21 +16,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.iskan.chroniclelens.ui.components.common.AnimatedFab
-import com.iskan.chroniclelens.ui.components.common.GradientButton
 import com.iskan.chroniclelens.ui.components.journal.*
+import com.iskan.chroniclelens.ui.components.common.*
 import com.iskan.chroniclelens.ui.theme.*
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun JournalListScreen(
     journals: List<JournalEntry>,
     onJournalClick: (JournalEntry) -> Unit,
     onDeleteJournal: (JournalEntry) -> Unit,
-    onCreateNewClick: () -> Unit
+    onCreateNewClick: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     var journalToDelete by remember { mutableStateOf<JournalEntry?>(null) }
@@ -66,6 +63,11 @@ fun JournalListScreen(
                         "Your Memories",
                         style = MaterialTheme.typography.headlineSmall
                     )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
                 },
                 actions = {
                     IconButton(onClick = { showSortMenu = true }) {
@@ -179,11 +181,10 @@ fun JournalListScreen(
                                         journalToDelete = journal
                                         showDeleteDialog = true
                                     },
-                                    modifier = Modifier.animateItemPlacement(
-                                        animationSpec = spring(
-                                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                                            stiffness = Spring.StiffnessLow
-                                        )
+                                    modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = spring(
+                                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                                        stiffness = Spring.StiffnessLow
+                                    )
                                     )
                                 )
                             }
