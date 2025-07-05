@@ -19,6 +19,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.iskan.chroniclelens.ui.components.CounterCard
+import com.iskan.chroniclelens.ui.components.JournalItem
 import com.iskan.chroniclelens.ui.components.MoodSelectorCard
 import com.iskan.chroniclelens.ui.viewmodel.JournalViewModel
 
@@ -45,15 +47,13 @@ fun JournalListScreen(
 ) {
     val count by viewModel.count.collectAsState()
     val selectedMood by viewModel.selectedMood.collectAsState()
-    val notes = viewModel.notes.collectAsState()
+    val notes by viewModel.notes.collectAsState()
 
     val isLoading = viewModel.isLoading.collectAsState()
 
-    var selectedNoteId by remember { mutableStateOf<String?>(null) }
-
     val context = LocalContext.current
 
-    val snackBarHostState = remember { androidx.compose.material3.SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
@@ -79,80 +79,69 @@ fun JournalListScreen(
             SnackbarHost(snackBarHostState)
         }
     ) { innerPadding ->
-        Crossfade(targetState = selectedNoteId) { noteId ->
-            if (noteId == null) {
-                Column(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    Text("Daftar Jurnal")
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Text("Daftar Jurnal")
 
-                    CounterCard(
-                        count = count,
-                        onIncrement = viewModel::incrementCount
-                    )
+            CounterCard(
+                count = count,
+                onIncrement = viewModel::incrementCount
+            )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                    Text("Pilih Mood Hari Ini:")
+            Text("Pilih Mood Hari Ini:")
 
-                    MoodSelectorCard(
-                        selectedMood = selectedMood,
-                        onMoodChange = viewModel::setMood
-                    )
+            MoodSelectorCard(
+                selectedMood = selectedMood,
+                onMoodChange = viewModel::setMood
+            )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                    Button(
-                        onClick = { viewModel.showSnackBar("Ini adalah snackbar dari ViewModel!") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp)
-                    ) {
-                        Text("Tampilkan Snackbar")
-                    }
+            Button(
+                onClick = { viewModel.showSnackBar("Ini adalah snackbar dari ViewModel!") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+            ) {
+                Text("Tampilkan Snackbar")
+            }
 
-                    Button(
-                        onClick = viewModel::addJournal,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp)
-                            .testTag("add_journal_button")
-                    ) {
-                        Text("➕ Tambah Jurnal Baru")
-                    }
+            Button(
+                onClick = viewModel::addJournal,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+                    .testTag("add_journal_button")
+            ) {
+                Text("➕ Tambah Jurnal Baru")
+            }
 
-                    LazyColumn {
-                        items(notes.value) { entry ->
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { selectedNoteId = entry.id }
-                                    .padding(8.dp)
-                            ) {
-                                Text("#${entry.id} - ${entry.title}", modifier = Modifier.padding(16.dp))
-                            }
-                        }
-                    }
-
-                    if (isLoading.value){
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
+            LazyColumn {
+                items( items = notes, key = { it.id } )
+                { entry ->
+                    JournalItem(entry)
+                    {
+                        viewModel.navigateToDetail(entry.id)
+                        Log.d("JournalListScreen", "JournalItem clicked: ${entry.id}")
                     }
                 }
-            } else {
-                LaunchedEffect(noteId) {
-                    viewModel.navigateToDetail(noteId)
-                    selectedNoteId = null
+            }
+
+            if (isLoading.value){
+                Spacer(modifier = Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
             }
         }
+        }
     }
-}

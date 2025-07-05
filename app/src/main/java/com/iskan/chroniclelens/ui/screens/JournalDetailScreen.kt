@@ -19,7 +19,7 @@ fun JournalDetailScreen(
     entryId: String,
     viewModel: JournalViewModel = viewModel()
 ) {
-    val entry = viewModel.getEntryById(entryId)
+    val entry = remember(entryId) { viewModel.getEntryById(entryId) }
 
     Column(
         modifier = Modifier
