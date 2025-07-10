@@ -1,26 +1,28 @@
 package com.iskan.chroniclelens.ui.viewmodel
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.iskan.chroniclelens.di.DefaultDispatcher
 import com.iskan.chroniclelens.domain.model.JournalEntry
 import com.iskan.chroniclelens.domain.repository.JournalRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class JournalViewModel @Inject constructor(
-    private val repo: JournalRepository
+    private val repo: JournalRepository,
+    @DefaultDispatcher private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
+
 
     val notes = repo.getAllEntries()
 
@@ -44,33 +46,38 @@ class JournalViewModel @Inject constructor(
     }
 
     fun addJournal() {
-        if (isLoading.value) return
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) { // Use injected dispatcher
             isLoading.value = true
-            delay(1000)
-            repo.addJournal()
-            isLoading.value = false
+            try {
+                repo.addJournal()
+                showToast("Jurnal berhasil ditambahkan!")
+            } catch (e: Exception) {
+                showSnackBar("Gagal menambah jurnal: ${e.message}")
+            } finally {
+                isLoading.value = false
+            }
         }
     }
+
 
     fun getEntryById(id: String): JournalEntry? {
         return repo.getEntryById(id)
     }
 
     fun showToast(message: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             _eventChannel.send(UiEvent.ShowToast(message))
         }
     }
 
     fun showSnackBar(message: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             _eventChannel.send(UiEvent.ShowSnackBar(message))
         }
     }
 
     fun navigateToDetail(id: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             _eventChannel.send(UiEvent.NavigateToDetail(id))
         }
     }

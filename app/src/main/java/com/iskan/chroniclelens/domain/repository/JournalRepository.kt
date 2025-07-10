@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.StateFlow
 interface JournalRepository {
     fun getAllEntries(): StateFlow<List<JournalEntry>>
     fun getEntryById(id: String): JournalEntry?
-    fun addJournal()
+   suspend fun addJournal()
 }

@@ -24,7 +24,7 @@ class JournalRepositoryImpl : JournalRepository {
         return journalList.value.find { it.id == id }
     }
 
-    override fun addJournal() {
+    override suspend fun addJournal() {
         val newId = "%03d".format(journalList.value.size + 1)
         journalList.value = journalList.value + JournalEntry(newId, "Jurnal baru $newId")
     }
